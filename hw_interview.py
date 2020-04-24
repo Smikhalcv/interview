@@ -26,19 +26,22 @@ class Stack(list):
 
     def isEmpty(self):
         """Проверка стека на пустоту. Метод возвращает True или False"""
-        print(bool(self))
+        if bool(self):
+            return False
+        else:
+            return True
 
     def push(self, value):
         """Добавляет новый элемент на вершину стека. Метод ничего не возвращает"""
-        self.insert(0, value)
+        self.append(value)
 
     def new_pop(self):
         """Удаляет верхний элемент стека. Стек изменяется. Метод возвращает верхний элемент стека"""
-        return self.pop(0)
+        return self.pop(-1)
 
     def peek(self):
         """Возвращает верхний элемент стека, но не удаляет его. Стек не меняется"""
-        return self[0]
+        return self[-1]
 
     def size(self):
         """Возвращает количество элементов в стеке"""
@@ -56,9 +59,38 @@ test6 = '[[{())}]'
 def check(data):
     """Проверяет сбалансированность скобок"""
     data_s = Stack(data)
-    ind = False
-    if data_s.count('(') == data_s.count(')') and data_s.count('[') == data_s.count(']') and data_s.count('{') == data_s.count('}'):
-        ind = True
+    ind = True
+    if data_s.size() % 2 == 0: # Проверяет, если количество элементов нечётное, последовательность не сбалансирована
+        while not data_s.isEmpty():
+            # Если последовательность заканчивается на не закрытую скобку последовательность не сбалансирована
+            if data_s.peek() == '{' or data_s.peek() == '[' or data_s.peek() == '(':
+                ind = False
+                break
+            # Проверяет последовательность с конца, если есть пара скобок,
+            # удаляет последнюю скобку, разворачивает последовательность,
+            # удаляет ближайшую к ней парную скобку и разворачивает назад
+            if data_s.peek() == ')' and '(' in data_s:
+                data_s.new_pop()
+                data_s.reverse()
+                data_s.remove('(')
+                data_s.reverse()
+            elif data_s.peek() == ']' and '[' in data_s:
+                data_s.new_pop()
+                data_s.reverse()
+                data_s.remove('[')
+                data_s.reverse()
+            elif data_s.peek() == '}' and '{' in data_s:
+                data_s.new_pop()
+                data_s.reverse()
+                data_s.remove('{')
+                data_s.reverse()
+            # Если больше нет парных скобок, а елементы в последовательности остались, она не сбалансирована
+            else:
+                ind = False
+                break
+    else:
+        ind = False
+    # Выводит результат
     if ind:
         print(f'Последовательность {data} сбалансирована')
     else:
